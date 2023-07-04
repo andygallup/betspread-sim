@@ -9,6 +9,7 @@ public class Seat {
     private int bet;
     private Optional<Bet> insuranceBet;
     public Seat(int bet, ArrayList<Integer> cards){
+        hands = new ArrayList<Hand>();
         Bet betObj = new Bet(bet);
         this.bet = bet;
         insuranceBet = Optional.empty();
@@ -25,5 +26,17 @@ public class Seat {
     }
     public ArrayList<Hand> getHands(){
         return hands;
+    }
+
+    @Override
+    public String toString() {
+        String ret = "";
+        for (Hand hand : hands){
+            ret += " HAND: ";
+            for (Integer card : hand.getCards()) {
+                ret += card + ", " ;
+            }
+        }
+        return ret;
     }
 }

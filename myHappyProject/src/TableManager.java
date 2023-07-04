@@ -2,9 +2,12 @@ package src;
 
 import src.utils.BetConfig;
 
-import java.sql.Array;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
+import static java.lang.Math.floor;
+import static java.lang.System.exit;
 import static src.utils.PlayerHandUtils.*;
 
 public class TableManager {
@@ -12,7 +15,7 @@ public class TableManager {
     private boolean stand17;
     private double deckPen;
     private int minBet;
-    private double startingBankroll;
+    private double bankroll;
     private int handsPerHour;
     private int hoursPlayed;
     private ArrayList<Seat> seats;
@@ -21,32 +24,49 @@ public class TableManager {
     private int runningCount;
     private DecisionMaker decisionMaker;
     private Map<Integer, BetConfig> betSpread;
-    public TableManager(int shoeSize, boolean stand17, double deckPen, int minBet, double startingBankroll, int handsPerHour, int hoursPlayed, Map<Integer, BetConfig> betSpread){
+    Logger logger = Logger.getLogger(TableManager.class.getName());
+    public TableManager(int shoeSize, boolean stand17, double deckPen, int minBet, double bankroll, int handsPerHour, int hoursPlayed, Map<Integer, BetConfig> betSpread){
         this.stand17 = stand17;
         this.shoeSize = shoeSize;
         this.deckPen = deckPen;
         this.minBet = minBet;
-        this.startingBankroll = startingBankroll;
+        this.bankroll = bankroll;
         this.handsPerHour = handsPerHour;
         this.hoursPlayed = hoursPlayed;
         this.runningCount = 0;
         this.decisionMaker = new DecisionMaker(stand17);
+        decisionMaker.buildBasicStrategyTables();
         this.betSpread = betSpread;
         shuffleShoe();
+    }
+    public void playGame(){
+        int numRounds = handsPerHour * hoursPlayed;
+        for (int i = 0; i < numRounds; i++){
+            System.out.println(i);
+            playRound();
+        }
 
-        // for rounds
-
+        System.out.println("ENDING BANKROLL " + bankroll);
     }
 
     public void playRound(){
+        // can you even play bro?
+        if(bankroll <= 3*minBet){
+            System.out.println("I'm broke");
+            return;
+        }
         // should shuffle?
         if(shouldShuffle()) { shuffleShoe();}
         // Clear dealer hand and seats (clears hands)
         dealerHand = new ArrayList<Integer>();
         seats = new ArrayList<Seat>();
         // determine number of seats and bets based on count
-        int seatsToPlay = betSpread.get(calculateTrueCount(runningCount, shoe.size())).getSeats();
-        int bet = minBet * betSpread.get(calculateTrueCount(runningCount, shoe.size())).getBettingUnits();
+        int betCount = (int)floor(calculateTrueCount(runningCount, shoe.size()));
+        if (betCount > 4) { betCount = 4; }
+        if (betCount < 0) { betCount = 0; }
+        System.out.println("BETCOUNT: " + betCount);
+        int seatsToPlay = betSpread.get(betCount).getSeats();
+        int bet = minBet * betSpread.get(betCount).getBettingUnits();
         // create seats
         for(int i = 0; i < seatsToPlay; i++){
             ArrayList<Integer> tempCards = new ArrayList<Integer>();
@@ -64,17 +84,21 @@ public class TableManager {
         // check for blackjack (dealer and player)
         if(handleDealerBlackjack()){
             // if dealer had blackjack, payout and return (round is over)
-            //payout();
-            // TODO: Add down card to count
+            payOut();
             return;
         }
+
         handlePlayerBlackjack();
+        System.out.println("HERE2");
         // play seats
         playSeats(dealerUpCard);
-        // TODO: Add down card to count
+        System.out.println("HERE3");
+        // play dealer
+        playDealerHand();
+        // evaluate bet statuses
+        evaluateBets();
         // pay out
-        // clear seats and hands
-        // TODO: If you run out of money don't bet
+        payOut();
     }
     public int dealCard(){
         // Removes a card from the deck and returns the value
@@ -112,6 +136,31 @@ public class TableManager {
 
         //Shuffle
         Collections.shuffle(shoe);
+        runningCount = 0;
+    }
+    public void setShoe2s(){
+        // Method to ease testing
+        shoe = new ArrayList<Integer>();
+        List<Integer> fresh_deck = Arrays.asList(
+                2, 2, 2, 2,
+                2, 2, 2, 2,
+                2, 2, 2, 2,
+                2, 2, 2, 2, 2,
+                2, 2, 2, 2,
+                2, 2, 2, 2,
+                2,2, 2, 2, 2,
+                2, 2, 2, 2,
+                2, 2, 2, 2,
+                2,2, 2, 2, 2,
+                2, 2, 2, 2,
+                2, 2, 2, 2,
+                2,2, 2, 2, 2,
+                2, 2, 2, 2,
+                2, 2, 2, 2,
+                2);
+        for (int i = 0; i < shoeSize; i++) {
+            shoe.addAll(fresh_deck);
+        }
         runningCount = 0;
     }
     public void handleInsurance(int dealerUpCard){
@@ -162,24 +211,126 @@ public class TableManager {
             int numHands = seat.getHands().size();
             for(int i = 0; i < numHands; i++) {
                 PlayDecision decision;
-                if(seat.getHands().size() >= 4) { decisionMaker.setSplitIsLegal(false); }
+                Hand currHand = seat.getHands().get(i);
                 do{
-                    decision = decisionMaker.makeDecision(seat.getHands().get(i).getCards(), dealerUpCard, calculateTrueCount(runningCount, shoe.size()));
+                    if(seat.getHands().size() >= 4) { decisionMaker.setSplitIsLegal(false); }
+                    decision = decisionMaker.makeDecision(currHand.getCards(), dealerUpCard, calculateTrueCount(runningCount, shoe.size()));
+                    System.out.println("DECISION: " + decision);
                     switch (decision) {
                         case SPLIT:
+                            Bet newBet = new Bet(currHand.getBet().getBetAmount());
+                            ArrayList<Integer> newCards = new ArrayList<Integer>();
+                            newCards.add(currHand.getCards().remove(0));
+                            newCards.add(dealCard());
+                            Hand newHand = new Hand(newBet, newCards);
+                            currHand.getCards().add(dealCard());
+                            seat.getHands().add(newHand);
                             numHands++;
-                            return;
+                            break;
                         case DOUBLE:
-                            return;
+                            currHand.getBet().doubleBet();
+                            currHand.getCards().add(dealCard());
+                            break;
                         case SURRENDER:
-                            return;
+                            currHand.setBetStatus(Bet.BetStatus.SURRENDERED);
+                            break;
                         case HIT:
-                            return;
+                            currHand.getCards().add(dealCard());
+                            break;
                         case STAND:
+                            break;
+                        case OOPSIE:
+                            System.out.println("SEAT: " + seat.toString());
+                            System.out.println("DEALER HAND: " + dealerHand.get(1));
+                            System.out.println("RUNNING COUNT: " + runningCount);
+                            System.out.println("TRUE COUNT: " + calculateTrueCount(runningCount, shoe.size()));
+                            System.out.println("CARDS LEFT IN SHOE: " + shoe.size());
+                            System.out.println("BANKROLL: " + bankroll);
+                            System.out.println("OOPSIE");
+                            exit(1);
+                        default:
+                            throw new RuntimeException("DEFAULTED ON DECISION MAKING");
                     }
-                } while(decision==PlayDecision.HIT || decision==PlayDecision.SPLIT);
+                } while(decision != PlayDecision.STAND && decision != PlayDecision.DOUBLE && decision != PlayDecision.SURRENDER && playerHandValue(currHand.getCards()) < 22);
             }
             decisionMaker.setSplitIsLegal(true);
+        }
+    }
+    public void playDealerHand(){
+        while(playerHandValue(dealerHand) < 17){
+            dealerHand.add(dealCard());
+        }
+        if(playerHandValue(dealerHand) == 17 && isSoft(dealerHand) && !stand17){
+            dealerHand.add(dealCard());
+        }
+    }
+    public void evaluateBets(){
+        for (Seat seat : seats){
+            for (Hand hand : seat.getHands()){
+                Bet currBet = hand.getBet();
+                if (currBet.getBetStatus() == Bet.BetStatus.PENDING) {
+                    if (playerHandValue(hand.getCards()) >= 22) {
+                        currBet.setBetStatus(Bet.BetStatus.LOST);
+                        continue;
+                    }
+                    if (playerHandValue(dealerHand) >= 22) {
+                        currBet.setBetStatus(Bet.BetStatus.WON);
+                        continue;
+                    }
+                    if (playerHandValue(hand.getCards()) > playerHandValue(dealerHand)){
+                        currBet.setBetStatus(Bet.BetStatus.WON);
+                        continue;
+                    }
+                    if (playerHandValue(hand.getCards()) == playerHandValue(dealerHand)){
+                        currBet.setBetStatus(Bet.BetStatus.PUSHED);
+                        continue;
+                    }
+                    if (playerHandValue(hand.getCards()) < playerHandValue(dealerHand)){
+                        currBet.setBetStatus(Bet.BetStatus.LOST);
+                    }
+                }
+            }
+        }
+    }
+    public void payOut(){
+        runningCount += returnCountForCard(dealerHand.get(0));
+        for(Seat seat : seats) {
+            // pay insurance bets as they are handled on a per seat, not per hand basis
+            if(seat.getInsuranceBet().isPresent()){
+                double insurancePayoutAmount = seat.getInsuranceBet().get().getBetAmount();
+                if(seat.getInsuranceBet().get().getBetStatus() == Bet.BetStatus.WON){
+                    bankroll += insurancePayoutAmount * 2; //insurance pays 2:1
+                }
+                else if (seat.getInsuranceBet().get().getBetStatus() == Bet.BetStatus.LOST) {
+                    bankroll -= insurancePayoutAmount;
+                }
+                else{
+                    System.out.println("BET STATUS: " + seat.getInsuranceBet().get().getBetStatus());
+                    throw new RuntimeException("Insurance paying something not WON/LOST");
+                }
+            }
+            for (Hand hand : seat.getHands()) {
+                double betAmount = hand.getBet().getBetAmount();
+                if(hand.getBet().getBetStatus() == Bet.BetStatus.BLACKJACK_WIN){
+                    bankroll += betAmount * 1.5;
+                }
+                else if(hand.getBet().getBetStatus() == Bet.BetStatus.WON){
+                    bankroll += betAmount;
+                }
+                else if(hand.getBet().getBetStatus() == Bet.BetStatus.PUSHED){
+                    // DO NOTHING
+                }
+                else if(hand.getBet().getBetStatus() == Bet.BetStatus.LOST){
+                    bankroll -= betAmount;
+                }
+                else if(hand.getBet().getBetStatus() == Bet.BetStatus.SURRENDERED){
+                    bankroll -= betAmount/2;
+                }
+                else{
+                    System.out.println("BET STATUS: " + hand.getBet().getBetStatus());
+                    throw new RuntimeException("Invalid bet status during payout");
+                }
+            }
         }
     }
 }

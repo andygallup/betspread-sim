@@ -6,7 +6,8 @@ public class Bet {
         WON,
         BLACKJACK_WIN,
         LOST,
-        PUSHED
+        PUSHED,
+        SURRENDERED
     }
     private double betAmount;
     private BetStatus betStatus;

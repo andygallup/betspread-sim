@@ -164,17 +164,6 @@ public class DecisionMaker {
         softTable[1][8] = PlayDecision.OOPSIE;
         softTable[1][9] = PlayDecision.OOPSIE;
         softTable[1][10] = PlayDecision.OOPSIE;
-        // Player hand Ace Ace softTables (should be handled by splitTable)
-        softTable[2][1] = PlayDecision.OOPSIE;
-        softTable[2][2] = PlayDecision.OOPSIE;
-        softTable[2][3] = PlayDecision.OOPSIE;
-        softTable[2][4] = PlayDecision.OOPSIE;
-        softTable[2][5] = PlayDecision.OOPSIE;
-        softTable[2][6] = PlayDecision.OOPSIE;
-        softTable[2][7] = PlayDecision.OOPSIE;
-        softTable[2][8] = PlayDecision.OOPSIE;
-        softTable[2][9] = PlayDecision.OOPSIE;
-        softTable[2][10] = PlayDecision.OOPSIE;
         // Dealer 0 == OOPSIE
         splitTable[0][0] = PlayDecision.OOPSIE;
         splitTable[1][0] = PlayDecision.OOPSIE;
@@ -400,6 +389,17 @@ public class DecisionMaker {
         hardTable[21][10] = PlayDecision.STAND;
     }
     private void buildSoftTable(){
+        // Player hand Ace Ace (cannot be resplit)
+        softTable[2][1] = PlayDecision.STAND;
+        softTable[2][2] = PlayDecision.STAND;
+        softTable[2][3] = PlayDecision.STAND;
+        softTable[2][4] = PlayDecision.STAND;
+        softTable[2][5] = PlayDecision.STAND;
+        softTable[2][6] = PlayDecision.STAND;
+        softTable[2][7] = PlayDecision.STAND;
+        softTable[2][8] = PlayDecision.STAND;
+        softTable[2][9] = PlayDecision.STAND;
+        softTable[2][10] = PlayDecision.STAND;
         // Player hand Ace 2
         softTable[3][1] = PlayDecision.HIT;
         softTable[3][2] = PlayDecision.HIT;

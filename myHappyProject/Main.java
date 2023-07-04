@@ -17,7 +17,7 @@ public class Main {
         boolean stand17 = Boolean.parseBoolean(args[1]);
         double deckPen = Double.parseDouble(args[2]);
         int minBet = Integer.parseInt(args[3]);
-        double startingBankroll = Double.parseDouble(args[4]);
+        double bankroll = Double.parseDouble(args[4]);
         int handsPerHour = Integer.parseInt(args[5]);
         int hoursPlayed = Integer.parseInt(args[6]);
         int simIterations = Integer.parseInt(args[7]);
@@ -27,7 +27,7 @@ public class Main {
         System.out.println("stand17:" + stand17);
         System.out.println("deckPen:" + deckPen);
         System.out.println("minBet:" + minBet);
-        System.out.println("startingBankroll:" + startingBankroll);
+        System.out.println("bankroll:" + bankroll);
         System.out.println("handsPerHour:" + handsPerHour);
         System.out.println("hoursPlayed:" + hoursPlayed);
         System.out.println("simIterations:" + simIterations);
@@ -50,11 +50,12 @@ public class Main {
             JSONObject countSpecificJSON = (JSONObject) jo.get(key);
             long seats = (Long) countSpecificJSON.get("seats");
             long bettingUnits = (Long) countSpecificJSON.get("bettingUnitsPerSeat");
-            betSpread.put(0, new BetConfig((int)seats, (int) bettingUnits));
+            betSpread.put(i, new BetConfig((int)seats, (int) bettingUnits));
         }
 
         // run the game
-        TableManager tableManager = new TableManager(shoeSize, stand17, deckPen, minBet, startingBankroll, handsPerHour, hoursPlayed, betSpread);
+        TableManager tableManager = new TableManager(shoeSize, stand17, deckPen, minBet, bankroll, handsPerHour, hoursPlayed, betSpread);
+        tableManager.playGame();
     }
 
 }
