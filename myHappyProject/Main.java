@@ -13,6 +13,7 @@ import src.utils.BetConfig;
 public class Main {
     public static void main(String[] args) {
         // read in config
+        // default: 6 true 0.75 5 1000 100 10 100
         int shoeSize = Integer.parseInt(args[0]);
         boolean stand17 = Boolean.parseBoolean(args[1]);
         double deckPen = Double.parseDouble(args[2]);
