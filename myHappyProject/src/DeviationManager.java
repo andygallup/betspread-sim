@@ -9,7 +9,7 @@ public class DeviationManager {
     public DeviationManager(boolean stand17){
         this.stand17 = stand17;
     }
-    public PlayDecision getDeviationDecision(List<Integer> playerCardList, int dealerCard, float count){
+    public PlayDecision getDeviationDecision(List<Integer> playerCardList, int dealerCard, double count){
         // check if we surrender
         if(shouldSurrender(playerCardList, dealerCard, count)){
             return PlayDecision.SURRENDER;
@@ -50,7 +50,7 @@ public class DeviationManager {
         return PlayDecision.NO_DEVIATION;
     }
 
-    public boolean shouldSurrender(List<Integer> playerCardList, int dealerCard, float count){
+    public boolean shouldSurrender(List<Integer> playerCardList, int dealerCard, double count){
         //Surrender the following:
         //16 into 9 10 and 1
         //15 into 10, 1 at +1 or s17, 9 at +2
@@ -82,7 +82,7 @@ public class DeviationManager {
                 return true;
             }
             // check the split deviation for 8s into 1 in a hit 17 game
-            if(canSplit(playerCardList) && playerCardList.get(0) == 8 && dealerCard == 1 && !stand17){
+            if(handIsSplittable(playerCardList) && playerCardList.get(0) == 8 && dealerCard == 1 && !stand17){
                 return true;
             }
         }

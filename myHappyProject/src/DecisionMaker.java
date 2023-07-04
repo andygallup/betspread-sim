@@ -6,8 +6,10 @@ import static src.utils.PlayerHandUtils.*;
 
 public class DecisionMaker {
     private DeviationManager deviationManager;
+    private boolean splitIsLegal; // tracks if there is room to split again, can't resplit aces
     public DecisionMaker(boolean stand17){
         this.deviationManager = new DeviationManager(stand17);
+        splitIsLegal = true;
     }
     private PlayDecision[][] hardTable;
     private PlayDecision[][] softTable;
@@ -25,7 +27,7 @@ public class DecisionMaker {
         buildSplitTable();
         // put AA and A10 into soft table and throw run time exception thats why its 10x10
     }
-    public PlayDecision makeDecision(List<Integer> playerCardList, int dealerCard, float count){
+    public PlayDecision makeDecision(List<Integer> playerCardList, int dealerCard, double count){
         // Assumes stand 17 table - hit 17 is considered a deviation and handled in DeviationManager
         // Query DeviationManager to check if we do not use basicStrategy
         PlayDecision deviationDecision = deviationManager.getDeviationDecision(playerCardList, dealerCard, count);
@@ -35,8 +37,9 @@ public class DecisionMaker {
 
         // Check basic strategy tables if DeviationManager did not return a deviation
         // Check if we should split
-        if(canSplit(playerCardList)){ // if we have two cards
+        if(handIsSplittable(playerCardList) && splitIsLegal){ // if we have two cards
             if(getSplitTableValue(playerCardList.get(0), dealerCard) == PlayDecision.SPLIT) {
+                if(playerCardList.get(0) == 1) { splitIsLegal = false; }
                 return PlayDecision.SPLIT;
             }
         }
@@ -45,6 +48,9 @@ public class DecisionMaker {
             return getSoftTableValue(sumPlayerHand(playerCardList), dealerCard);
         }
         return getHardTableValue(sumPlayerHand(playerCardList), dealerCard);
+    }
+    public void setSplitIsLegal(boolean splitIsLegal){
+        this.splitIsLegal = splitIsLegal;
     }
     public PlayDecision getHardTableValue(int playerHandTotal, int dealerHand){
         return hardTable[playerHandTotal][dealerHand];
@@ -196,12 +202,12 @@ public class DecisionMaker {
     private void buildHardTable(){
         // Player hand 4
         hardTable[4][1] = PlayDecision.HIT;
-        hardTable[4][2] = PlayDecision.OOPSIE;
-        hardTable[4][3] = PlayDecision.OOPSIE;
-        hardTable[4][4] = PlayDecision.OOPSIE;
-        hardTable[4][5] = PlayDecision.OOPSIE;
-        hardTable[4][6] = PlayDecision.OOPSIE;
-        hardTable[4][7] = PlayDecision.OOPSIE;
+        hardTable[4][2] = PlayDecision.HIT;
+        hardTable[4][3] = PlayDecision.HIT;
+        hardTable[4][4] = PlayDecision.HIT;
+        hardTable[4][5] = PlayDecision.HIT;
+        hardTable[4][6] = PlayDecision.HIT;
+        hardTable[4][7] = PlayDecision.HIT;
         hardTable[4][8] = PlayDecision.HIT;
         hardTable[4][9] = PlayDecision.HIT;
         hardTable[4][10] = PlayDecision.HIT;

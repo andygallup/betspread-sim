@@ -70,7 +70,7 @@ public class TableManager {
         }
         handlePlayerBlackjack();
         // play seats
-        playSeats();
+        playSeats(dealerUpCard);
         // TODO: Add down card to count
         // pay out
         // clear seats and hands
@@ -157,9 +157,29 @@ public class TableManager {
         }
 
     }
-    public void playSeats(){
+    public void playSeats(int dealerUpCard){
         for(Seat seat : seats){
-            return;
+            int numHands = seat.getHands().size();
+            for(int i = 0; i < numHands; i++) {
+                PlayDecision decision;
+                if(seat.getHands().size() >= 4) { decisionMaker.setSplitIsLegal(false); }
+                do{
+                    decision = decisionMaker.makeDecision(seat.getHands().get(i).getCards(), dealerUpCard, calculateTrueCount(runningCount, shoe.size()));
+                    switch (decision) {
+                        case SPLIT:
+                            numHands++;
+                            return;
+                        case DOUBLE:
+                            return;
+                        case SURRENDER:
+                            return;
+                        case HIT:
+                            return;
+                        case STAND:
+                    }
+                } while(decision==PlayDecision.HIT || decision==PlayDecision.SPLIT);
+            }
+            decisionMaker.setSplitIsLegal(true);
         }
     }
 }

@@ -31,7 +31,7 @@ public class PlayerHandUtils {
     public static boolean isBlackjack(List<Integer> playerCardList){
         return playerHandValue(playerCardList) == 21 && playerCardList.size() == 2;
     }
-    public static boolean canSplit(List<Integer> playerCardList){
+    public static boolean handIsSplittable(List<Integer> playerCardList){
         return playerCardList.size() == 2 && playerCardList.get(0) == playerCardList.get(1);
     }
     public static boolean canDouble(List<Integer> playerCardList){
