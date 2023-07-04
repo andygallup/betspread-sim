@@ -55,7 +55,14 @@ public class Main {
 
         // run the game
         TableManager tableManager = new TableManager(shoeSize, stand17, deckPen, minBet, bankroll, handsPerHour, hoursPlayed, betSpread);
-        tableManager.playGame();
+        double avgEndBankroll = 0;
+        for (int i = 0; i < simIterations; i++){
+            System.out.println(i);
+            avgEndBankroll += tableManager.playGame();
+        }
+        avgEndBankroll = avgEndBankroll/simIterations;
+        System.out.println("AVERAGE END BANKROLL: " + avgEndBankroll);
+        System.out.println("AVG EV: " + (avgEndBankroll-bankroll)/hoursPlayed);
     }
 
 }

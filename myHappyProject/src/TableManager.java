@@ -39,20 +39,17 @@ public class TableManager {
         this.betSpread = betSpread;
         shuffleShoe();
     }
-    public void playGame(){
+    public double playGame(){
         int numRounds = handsPerHour * hoursPlayed;
         for (int i = 0; i < numRounds; i++){
-            System.out.println(i);
             playRound();
         }
-
-        System.out.println("ENDING BANKROLL " + bankroll);
+        return bankroll;
     }
 
     public void playRound(){
         // can you even play bro?
         if(bankroll <= 3*minBet){
-            System.out.println("I'm broke");
             return;
         }
         // should shuffle?
@@ -64,7 +61,6 @@ public class TableManager {
         int betCount = (int)floor(calculateTrueCount(runningCount, shoe.size()));
         if (betCount > 4) { betCount = 4; }
         if (betCount < 0) { betCount = 0; }
-        System.out.println("BETCOUNT: " + betCount);
         int seatsToPlay = betSpread.get(betCount).getSeats();
         int bet = minBet * betSpread.get(betCount).getBettingUnits();
         // create seats
@@ -87,12 +83,9 @@ public class TableManager {
             payOut();
             return;
         }
-
         handlePlayerBlackjack();
-        System.out.println("HERE2");
         // play seats
         playSeats(dealerUpCard);
-        System.out.println("HERE3");
         // play dealer
         playDealerHand();
         // evaluate bet statuses
@@ -215,7 +208,6 @@ public class TableManager {
                 do{
                     if(seat.getHands().size() >= 4) { decisionMaker.setSplitIsLegal(false); }
                     decision = decisionMaker.makeDecision(currHand.getCards(), dealerUpCard, calculateTrueCount(runningCount, shoe.size()));
-                    System.out.println("DECISION: " + decision);
                     switch (decision) {
                         case SPLIT:
                             Bet newBet = new Bet(currHand.getBet().getBetAmount());
