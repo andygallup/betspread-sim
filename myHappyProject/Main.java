@@ -46,7 +46,7 @@ public class Main {
         for (int i = 0; i < 5; i++) {
             String key = "" + i;
             JSONObject countSpecificJSON = (JSONObject) jo.get(key);
-            long seats = (Long) countSpecificJSON.get("seats");
+            long seats = (Long) countSpecificJSON.get(  "seats");
             long bettingUnits = (Long) countSpecificJSON.get("bettingUnitsPerSeat");
             betSpread.put(i, new BetConfig((int)seats, (int) bettingUnits));
         }
@@ -59,7 +59,6 @@ public class Main {
         for (int i = 0; i < simIterations; i++){
             tableManager = new TableManager(shoeSize, stand17, deckPen, minBet, bankroll, handsPerHour, hoursPlayed, betSpread);
             endBankroll = tableManager.playGame();
-            System.out.println("End bankroll: " + endBankroll);
             if (endBankroll <= 3*minBet){
                 numberOfTimesBroke += 1;
             }
@@ -70,5 +69,4 @@ public class Main {
         System.out.println("AVG EV: " + (avgEndBankroll-bankroll)/hoursPlayed);
         System.out.println("ROR: " + (numberOfTimesBroke/(double)simIterations));
     }
-
 }
