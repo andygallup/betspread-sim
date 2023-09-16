@@ -22,11 +22,6 @@ class DecisionMakerTest {
     }
 
     @Test
-    void onePlusOne() {
-        assertEquals(1, 1);
-    }
-
-    @Test
     void checkHardNotNull() {
         for(int player = 0; player < 22; player++){
             for(int dealer = 0; dealer < 11; dealer++){

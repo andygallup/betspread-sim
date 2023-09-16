@@ -1,5 +1,3 @@
-import com.google.common.collect.Table;
-import src.DecisionMaker;
 import src.TableManager;
 
 import java.io.FileReader;
@@ -47,7 +45,6 @@ public class Main {
         Map<Integer, BetConfig> betSpread = new HashMap<Integer, BetConfig>();
         for (int i = 0; i < 5; i++) {
             String key = "" + i;
-            System.out.println("key: " + key);
             JSONObject countSpecificJSON = (JSONObject) jo.get(key);
             long seats = (Long) countSpecificJSON.get("seats");
             long bettingUnits = (Long) countSpecificJSON.get("bettingUnitsPerSeat");
@@ -55,15 +52,23 @@ public class Main {
         }
 
         // run the game
-        TableManager tableManager = new TableManager(shoeSize, stand17, deckPen, minBet, bankroll, handsPerHour, hoursPlayed, betSpread);
+        TableManager tableManager;
         double avgEndBankroll = 0;
+        double endBankroll = 0;
+        double numberOfTimesBroke = 0;
         for (int i = 0; i < simIterations; i++){
-            System.out.println(i);
-            avgEndBankroll += tableManager.playGame();
+            tableManager = new TableManager(shoeSize, stand17, deckPen, minBet, bankroll, handsPerHour, hoursPlayed, betSpread);
+            endBankroll = tableManager.playGame();
+            System.out.println("End bankroll: " + endBankroll);
+            if (endBankroll <= 3*minBet){
+                numberOfTimesBroke += 1;
+            }
+            avgEndBankroll += endBankroll;
         }
         avgEndBankroll = avgEndBankroll/simIterations;
         System.out.println("AVERAGE END BANKROLL: " + avgEndBankroll);
         System.out.println("AVG EV: " + (avgEndBankroll-bankroll)/hoursPlayed);
+        System.out.println("ROR: " + (numberOfTimesBroke/(double)simIterations));
     }
 
 }

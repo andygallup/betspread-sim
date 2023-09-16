@@ -7,9 +7,7 @@ public class BetConfig {
         this.seats = seats;
         this.bettingUnits = bettingUnits;
     }
-    public int getSeats() {
-        return seats;
-    }
+    public int getSeats() { return seats; }
 
     public int getBettingUnits() {
         return bettingUnits;
