@@ -113,7 +113,11 @@ public class BlackjackSimUI {
         gbc.gridx = 0;
         gbc.gridy = 5;
         gbc.weightx = 0.6;
-        mainPanel.add(new TooltipLabel("Bankroll:", "Starting bankroll").getPanel(), gbc);
+        mainPanel.add(new TooltipLabel(
+                "Bankroll:",
+                "Starting bankroll")
+                .getPanel(),
+                gbc);
         gbc.gridx = 1;
         gbc.weightx = 0.5;
         bankrollField = new JTextField(5);
@@ -122,7 +126,11 @@ public class BlackjackSimUI {
         gbc.gridx = 0;
         gbc.gridy = 6;
         gbc.weightx = 0.6;
-        mainPanel.add(new TooltipLabel("Hands per Hour:", "Average number of hands expected to be played per hour").getPanel(), gbc);
+        mainPanel.add(new TooltipLabel(
+                "Hands per Hour:",
+                "Average number of hands expected to be played per hour")
+                .getPanel(),
+                gbc);
         gbc.gridx = 1;
         gbc.weightx = 0.5;
         handsPerHourField = new JTextField(5);
@@ -131,7 +139,11 @@ public class BlackjackSimUI {
         gbc.gridx = 0;
         gbc.gridy = 7;
         gbc.weightx = 0.6;
-        mainPanel.add(new TooltipLabel("Hours Played:", "Number of hours to be played per sim iteration").getPanel(), gbc);
+        mainPanel.add(new TooltipLabel(
+                "Hours Played:",
+                "Number of hours to be played per sim iteration")
+                .getPanel(),
+                gbc);
         gbc.gridx = 1;
         gbc.weightx = 0.5;
         hoursPlayedField = new JTextField(5);
