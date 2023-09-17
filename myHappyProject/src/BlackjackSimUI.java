@@ -250,7 +250,7 @@ public class BlackjackSimUI {
         result = runSim(simIterations, shoeSize, stand17, deckPen, minBet, bankroll, handsPerHour, hoursPlayed);
         outputTextArea.append("\nSimulation results:");
         outputTextArea.append("\nAverage End Bankroll: " + result.get(0));
-        outputTextArea.append("\nAverage EV/hour: " + result.get(1));
+        outputTextArea.append("\nEV/hour: " + result.get(1));
         outputTextArea.append("\nRisk of Ruin: " + result.get(2));
 
         //resize to show all content
