@@ -3,6 +3,7 @@ package src;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import src.utils.BetConfig;
+import src.utils.TooltipLabel;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -29,47 +30,116 @@ public class BlackjackSimUI {
     public BlackjackSimUI() {
         frame = new JFrame("Blackjack Simulator");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(400, 400);
-        frame.setLayout(new BorderLayout(10, 10));
+        frame.setSize(300, 400);
 
-        // Create the main panel for outer padding
-        JPanel mainPanel = new JPanel(new BorderLayout());
+        // Create the mainPanel
+        JPanel mainPanel = new JPanel(new GridBagLayout());
+
         mainPanel.setBorder(new EmptyBorder(10, 10, 10, 10)); // Add outer padding of 10
+        GridBagConstraints gbc = new GridBagConstraints();
 
-        JPanel inputPanel = new JPanel(new GridLayout(9, 2, 5, 5));
+        gbc.fill = GridBagConstraints.HORIZONTAL;
 
-        inputPanel.add(new JLabel("Sim Iterations:"));
-        simIterationsField = new JTextField();
-        inputPanel.add(simIterationsField);
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.weightx = 0.6;
+        mainPanel.add(new TooltipLabel(
+                "Sim Iterations:",
+                "Number of times to run the simulation. " +
+                "Recommended minimum of 100 for reasonably accurate answers. " +
+                "More simulations will result in more accuracy, but longer run times")
+                .getPanel(),
+                gbc);
+        gbc.gridx = 1;
+        gbc.weightx = 0.5;
+        simIterationsField = new JTextField(5);
+        mainPanel.add(simIterationsField, gbc);
 
-        inputPanel.add(new JLabel("Shoe Size:"));
-        shoeSizeField = new JTextField();
-        inputPanel.add(shoeSizeField);
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        gbc.weightx = 0.6;
+        mainPanel.add(new TooltipLabel(
+                "Shoe Size:",
+                "Enter the number of decks in the shoe.")
+                .getPanel(),
+                gbc);
+        gbc.gridx = 1;
+        gbc.weightx = 0.5;
+        shoeSizeField = new JTextField(5);
+        mainPanel.add(shoeSizeField, gbc);
 
-        inputPanel.add(new JLabel("Stand on 17:"));
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        gbc.weightx = 0.6;
+        mainPanel.add(new TooltipLabel(
+                "Stand on 17:",
+                "Whether the dealer will stand on soft 17, or hit on soft 17. " +
+                "Checked field indicates they will stand")
+                .getPanel(),
+                gbc);
+        gbc.gridx = 1;
+        gbc.weightx = 0.5;
         stand17Checkbox = new JCheckBox();
-        inputPanel.add(stand17Checkbox);
+        mainPanel.add(stand17Checkbox, gbc);
 
-        inputPanel.add(new JLabel("Deck Penetration (0-1):"));
-        deckPenetrationField = new JTextField();
-        inputPanel.add(deckPenetrationField);
+        gbc.gridx = 0;
+        gbc.gridy = 3;
+        gbc.weightx = 0.6;
+        mainPanel.add(new TooltipLabel(
+                "Deck Penetration (0-1):",
+                "Average percentage of the shoe that is dealt before the shoe is shuffled " +
+                "(0.75 = 75% of the shoe is dealt before shuffle)")
+                .getPanel(),
+                gbc);
+        gbc.gridx = 1;
+        gbc.weightx = 0.5;
+        deckPenetrationField = new JTextField(5);
+        mainPanel.add(deckPenetrationField, gbc);
 
-        inputPanel.add(new JLabel("Minimum Bet:"));
-        minBetField = new JTextField();
-        inputPanel.add(minBetField);
+        gbc.gridx = 0;
+        gbc.gridy = 4;
+        gbc.weightx = 0.6;
+        mainPanel.add(new TooltipLabel(
+                "Minimum Bet:",
+                "Minimum table bet. " +
+                "For the purposes of this sim, this is also considered the betting unit for any configured bet spread")
+                .getPanel(),
+                gbc);
+        gbc.gridx = 1;
+        gbc.weightx = 0.5;
+        minBetField = new JTextField(5);
+        mainPanel.add(minBetField, gbc);
 
-        inputPanel.add(new JLabel("Bankroll:"));
-        bankrollField = new JTextField();
-        inputPanel.add(bankrollField);
+        gbc.gridx = 0;
+        gbc.gridy = 5;
+        gbc.weightx = 0.6;
+        mainPanel.add(new TooltipLabel("Bankroll:", "Starting bankroll").getPanel(), gbc);
+        gbc.gridx = 1;
+        gbc.weightx = 0.5;
+        bankrollField = new JTextField(5);
+        mainPanel.add(bankrollField, gbc);
 
-        inputPanel.add(new JLabel("Hands per Hour:"));
-        handsPerHourField = new JTextField();
-        inputPanel.add(handsPerHourField);
+        gbc.gridx = 0;
+        gbc.gridy = 6;
+        gbc.weightx = 0.6;
+        mainPanel.add(new TooltipLabel("Hands per Hour:", "Average number of hands expected to be played per hour").getPanel(), gbc);
+        gbc.gridx = 1;
+        gbc.weightx = 0.5;
+        handsPerHourField = new JTextField(5);
+        mainPanel.add(handsPerHourField, gbc);
 
-        inputPanel.add(new JLabel("Hours Played:"));
-        hoursPlayedField = new JTextField();
-        inputPanel.add(hoursPlayedField);
+        gbc.gridx = 0;
+        gbc.gridy = 7;
+        gbc.weightx = 0.6;
+        mainPanel.add(new TooltipLabel("Hours Played:", "Number of hours to be played per sim iteration").getPanel(), gbc);
+        gbc.gridx = 1;
+        gbc.weightx = 0.5;
+        hoursPlayedField = new JTextField(5);
+        mainPanel.add(hoursPlayedField, gbc);
 
+        gbc.gridx = 0;
+        gbc.gridy = 8;
+        gbc.gridwidth = 2;
         JButton simulateButton = new JButton("Simulate");
         simulateButton.addActionListener(new ActionListener() {
             @Override
@@ -78,15 +148,17 @@ public class BlackjackSimUI {
             }
         });
 
-        mainPanel.add(inputPanel, BorderLayout.NORTH);
-        mainPanel.add(simulateButton, BorderLayout.CENTER);
+        mainPanel.add(simulateButton, gbc);
 
+        gbc.gridy = 9;
+        gbc.gridwidth = 2;
         outputTextArea = new JTextArea();
         outputTextArea.setText("Waiting for input...");
         outputTextArea.setEditable(false);
-        mainPanel.add(new JScrollPane(outputTextArea), BorderLayout.SOUTH);
-        frame.add(mainPanel);
+        mainPanel.add(new JScrollPane(outputTextArea), gbc);
 
+        frame.add(mainPanel);
+        frame.pack();
         frame.setVisible(true);
     }
 
