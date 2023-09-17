@@ -15,6 +15,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import static java.lang.Math.round;
+
 public class BlackjackSimUI {
     private JFrame frame;
     private JTextField simIterationsField;
@@ -198,6 +200,7 @@ public class BlackjackSimUI {
         // run the game
         TableManager tableManager;
         double avgEndBankroll = 0;
+        double highestBankroll = 0;
         double avgEv = 0;
         double ror = 0;
         double endBankroll = 0;
@@ -205,8 +208,11 @@ public class BlackjackSimUI {
         for (int i = 0; i < simIterations; i++){
             tableManager = new TableManager(shoeSize, stand17, deckPen, minBet, bankroll, handsPerHour, hoursPlayed, betSpread);
             endBankroll = tableManager.playGame();
-            if (endBankroll <= 3*minBet){
+            if (endBankroll <= 3*minBet) {
                 numberOfTimesBroke += 1;
+            }
+            if (endBankroll > highestBankroll) {
+                highestBankroll = endBankroll;
             }
             avgEndBankroll += endBankroll;
         }
@@ -217,6 +223,8 @@ public class BlackjackSimUI {
         outputArr.add(avgEndBankroll);
         outputArr.add(avgEv);
         outputArr.add(ror);
+        outputArr.add(numberOfTimesBroke);
+        outputArr.add(highestBankroll);
 
         return outputArr;
     }
@@ -243,16 +251,21 @@ public class BlackjackSimUI {
         outputTextArea.append("Hands per Hour: " + handsPerHour + "\n");
         outputTextArea.append("Hours Played: " + hoursPlayed + "\n");
         outputTextArea.append("Simulation Iterations: " + simIterations + "\n");
+        outputTextArea.append("---------------------------------------\n");
 
 
         // Run your simulations and update the outputTextArea with the results
         ArrayList<Double> result;
         result = runSim(simIterations, shoeSize, stand17, deckPen, minBet, bankroll, handsPerHour, hoursPlayed);
         outputTextArea.append("\nSimulation results:");
-        outputTextArea.append("\nAverage End Bankroll: " + result.get(0));
+        outputTextArea.append("\nAverage end bankroll: " + result.get(0));
         outputTextArea.append("\nEV/hour: " + result.get(1));
-        outputTextArea.append("\nRisk of Ruin: " + result.get(2));
+        outputTextArea.append("\nRisk of ruin: " + result.get(2));
 
+        outputTextArea.append("\n\nSimulation statistics: ");
+        outputTextArea.append("\nNumber of hands played: " + (simIterations*handsPerHour*hoursPlayed));
+        outputTextArea.append("\nNumber of simulations that ended in 'ruin': " + round(result.get(3)));
+        outputTextArea.append("\nHighest end bankroll: " + result.get(4));
         //resize to show all content
         frame.pack();
     }
