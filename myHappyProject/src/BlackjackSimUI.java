@@ -30,6 +30,29 @@ public class BlackjackSimUI {
     private JTextArea outputTextArea;
 
     public BlackjackSimUI() {
+        Object obj;
+        // Pull in betspread config from betspread.json
+        try{
+            obj = new JSONParser().parse(new FileReader("/Users/agallup/IdeaProjects/betspread-sim/myHappyProject/betspread.json"));
+        }
+        catch(Exception e){
+            throw new RuntimeException("Caught exception when creating JSONParser:", e);
+        }
+        // typecasting obj to JSONObject
+        JSONObject jo = (JSONObject) obj;
+        String betspreadString = "Betspread: \n";
+        for (int i = 0; i < 5; i++) {
+            String key = "" + i;
+            JSONObject countSpecificJSON = (JSONObject) jo.get(key);
+            long seats = (Long) countSpecificJSON.get("seats");
+            long bettingUnits = (Long) countSpecificJSON.get("bettingUnitsPerSeat");
+            betspreadString = betspreadString + "TC " + i + ": " + seats + " spot(s) betting " + bettingUnits + " units." + System.lineSeparator();
+        }
+
+        initUI(betspreadString);
+    }
+
+    private void initUI(String betspreadString) {
         frame = new JFrame("Blackjack Simulator");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(300, 400);
@@ -46,11 +69,11 @@ public class BlackjackSimUI {
         gbc.gridy = 0;
         gbc.weightx = 0.6;
         mainPanel.add(new TooltipLabel(
-                "Sim Iterations:",
-                "Number of times to run the simulation. " +
-                "Recommended minimum of 100 for reasonably accurate answers. " +
-                "More simulations will result in more accuracy, but longer run times")
-                .getPanel(),
+                        "Sim Iterations:",
+                        "Number of times to run the simulation. " +
+                                "Recommended minimum of 100 for reasonably accurate answers. " +
+                                "More simulations will result in more accuracy, but longer run times")
+                        .getPanel(),
                 gbc);
         gbc.gridx = 1;
         gbc.weightx = 0.5;
@@ -61,9 +84,9 @@ public class BlackjackSimUI {
         gbc.gridy = 1;
         gbc.weightx = 0.6;
         mainPanel.add(new TooltipLabel(
-                "Shoe Size:",
-                "Enter the number of decks in the shoe.")
-                .getPanel(),
+                        "Shoe Size:",
+                        "Enter the number of decks in the shoe.")
+                        .getPanel(),
                 gbc);
         gbc.gridx = 1;
         gbc.weightx = 0.5;
@@ -74,10 +97,10 @@ public class BlackjackSimUI {
         gbc.gridy = 2;
         gbc.weightx = 0.6;
         mainPanel.add(new TooltipLabel(
-                "Stand on 17:",
-                "Whether the dealer will stand on soft 17, or hit on soft 17. " +
-                "Checked field indicates they will stand")
-                .getPanel(),
+                        "Stand on 17:",
+                        "Whether the dealer will stand on soft 17, or hit on soft 17. " +
+                                "Checked field indicates they will stand")
+                        .getPanel(),
                 gbc);
         gbc.gridx = 1;
         gbc.weightx = 0.5;
@@ -88,10 +111,10 @@ public class BlackjackSimUI {
         gbc.gridy = 3;
         gbc.weightx = 0.6;
         mainPanel.add(new TooltipLabel(
-                "Deck Penetration (0-1):",
-                "Average percentage of the shoe that is dealt before the shoe is shuffled " +
-                "(0.75 = 75% of the shoe is dealt before shuffle)")
-                .getPanel(),
+                        "Deck Penetration (0-1):",
+                        "Average percentage of the shoe that is dealt before the shoe is shuffled " +
+                                "(0.75 = 75% of the shoe is dealt before shuffle)")
+                        .getPanel(),
                 gbc);
         gbc.gridx = 1;
         gbc.weightx = 0.5;
@@ -102,10 +125,10 @@ public class BlackjackSimUI {
         gbc.gridy = 4;
         gbc.weightx = 0.6;
         mainPanel.add(new TooltipLabel(
-                "Minimum Bet:",
-                "Minimum table bet. " +
-                "For the purposes of this sim, this is also considered the betting unit for any configured bet spread")
-                .getPanel(),
+                        "Minimum Bet:",
+                        "Minimum table bet. " +
+                                "For the purposes of this sim, this is also considered the betting unit for any configured bet spread")
+                        .getPanel(),
                 gbc);
         gbc.gridx = 1;
         gbc.weightx = 0.5;
@@ -116,9 +139,9 @@ public class BlackjackSimUI {
         gbc.gridy = 5;
         gbc.weightx = 0.6;
         mainPanel.add(new TooltipLabel(
-                "Bankroll:",
-                "Starting bankroll")
-                .getPanel(),
+                        "Bankroll:",
+                        "Starting bankroll")
+                        .getPanel(),
                 gbc);
         gbc.gridx = 1;
         gbc.weightx = 0.5;
@@ -129,9 +152,9 @@ public class BlackjackSimUI {
         gbc.gridy = 6;
         gbc.weightx = 0.6;
         mainPanel.add(new TooltipLabel(
-                "Hands per Hour:",
-                "Average number of hands expected to be played per hour")
-                .getPanel(),
+                        "Hands per Hour:",
+                        "Average number of hands expected to be played per hour")
+                        .getPanel(),
                 gbc);
         gbc.gridx = 1;
         gbc.weightx = 0.5;
@@ -142,9 +165,9 @@ public class BlackjackSimUI {
         gbc.gridy = 7;
         gbc.weightx = 0.6;
         mainPanel.add(new TooltipLabel(
-                "Hours Played:",
-                "Number of hours to be played per sim iteration")
-                .getPanel(),
+                        "Hours Played:",
+                        "Number of hours to be played per sim iteration")
+                        .getPanel(),
                 gbc);
         gbc.gridx = 1;
         gbc.weightx = 0.5;
@@ -152,8 +175,16 @@ public class BlackjackSimUI {
         mainPanel.add(hoursPlayedField, gbc);
 
         gbc.gridx = 0;
-        gbc.gridy = 8;
+        gbc.gridy += 1;
         gbc.gridwidth = 2;
+        JTextArea betspreadTextArea = new JTextArea();
+        betspreadTextArea.setText(betspreadString);
+        betspreadTextArea.setEditable(false);
+        mainPanel.add(betspreadTextArea, gbc);
+
+
+        gbc.gridy += gbc.gridheight;
+        gbc.gridheight = 1;
         JButton simulateButton = new JButton("Simulate");
         simulateButton.addActionListener(new ActionListener() {
             @Override
@@ -164,10 +195,10 @@ public class BlackjackSimUI {
 
         mainPanel.add(simulateButton, gbc);
 
-        gbc.gridy = 9;
+        gbc.gridy += gbc.gridheight;
         gbc.gridwidth = 2;
         outputTextArea = new JTextArea();
-        outputTextArea.setText("Waiting for input...");
+
         outputTextArea.setEditable(false);
         mainPanel.add(new JScrollPane(outputTextArea), gbc);
 
@@ -187,14 +218,15 @@ public class BlackjackSimUI {
         }
         // typecasting obj to JSONObject
         JSONObject jo = (JSONObject) obj;
-
+        String betspreadString = "";
         Map<Integer, BetConfig> betSpread = new HashMap<Integer, BetConfig>();
         for (int i = 0; i < 5; i++) {
             String key = "" + i;
             JSONObject countSpecificJSON = (JSONObject) jo.get(key);
-            long seats = (Long) countSpecificJSON.get(  "seats");
+            long seats = (Long) countSpecificJSON.get("seats");
             long bettingUnits = (Long) countSpecificJSON.get("bettingUnitsPerSeat");
             betSpread.put(i, new BetConfig((int)seats, (int) bettingUnits));
+            betspreadString = betspreadString + "TC " + i + ": " + seats + " spot(s) betting " + bettingUnits + " units.\n";
         }
 
         // run the game
