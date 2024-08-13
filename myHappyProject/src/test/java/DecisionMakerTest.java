@@ -1,16 +1,13 @@
-package tests;
-
 import static org.junit.jupiter.api.Assertions.*;
-import static src.utils.PlayerHandUtils.PlayDecision;
+import static app.utils.PlayerHandUtils.PlayDecision;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.logging.Logger;
-import java.util.logging.Level;
 
-import src.DecisionMaker;
+import app.DecisionMaker;
 
 class DecisionMakerTest {
     Logger logger = Logger.getLogger(DecisionMakerTest.class.getName());

@@ -1,4 +1,4 @@
-package src.utils;
+package app.utils;
 
 import java.util.List;
 

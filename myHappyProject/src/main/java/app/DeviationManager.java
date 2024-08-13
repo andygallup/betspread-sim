@@ -1,8 +1,8 @@
-package src;
+package app;
 
 import java.util.List;
 
-import static src.utils.PlayerHandUtils.*;
+import static app.utils.PlayerHandUtils.*;
 
 public class DeviationManager {
     boolean stand17;

@@ -1,11 +1,7 @@
-package src.utils;
+package app.utils;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
-import java.io.FileInputStream;
-import java.io.InputStream;
-
 
 public class TooltipLabel{
     String labelText;
@@ -23,7 +19,7 @@ public class TooltipLabel{
 
         // Create a custom tooltip icon (question mark circle)
         try{
-            ImageIcon imageIcon = new ImageIcon(getClass().getResource("/resources/question-mark-icon.png"));
+            ImageIcon imageIcon = new ImageIcon(getClass().getResource("/question-mark-icon.png"));
             imageIcon = new ImageIcon(imageIcon.getImage().getScaledInstance(16, 16, Image.SCALE_DEFAULT));
             JLabel tooltipLabel = new JLabel(imageIcon);
 

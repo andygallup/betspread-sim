@@ -1,9 +1,9 @@
-package src;
+package app;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
-import src.utils.BetConfig;
-import src.utils.TooltipLabel;
+import app.utils.BetConfig;
+import app.utils.TooltipLabel;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;

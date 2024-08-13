@@ -1,18 +1,8 @@
-package tests;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static src.utils.PlayerHandUtils.PlayDecision;
-
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import src.Bet;
-import src.TableManager;
-import src.utils.BetConfig;
+import app.TableManager;
+import app.utils.BetConfig;
 
-import java.io.FileReader;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
