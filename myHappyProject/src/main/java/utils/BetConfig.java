@@ -1,4 +1,4 @@
-package src.utils;
+package main.java.utils;
 
 public class BetConfig {
     int seats;

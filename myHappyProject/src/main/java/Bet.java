@@ -1,4 +1,4 @@
-package src;
+package main.java;
 
 public class Bet {
     public enum BetStatus{

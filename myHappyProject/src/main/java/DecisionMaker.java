@@ -1,8 +1,8 @@
-package src;
+package main.java;
 
 import java.util.List;
 
-import static src.utils.PlayerHandUtils.*;
+import static main.java.utils.PlayerHandUtils.*;
 
 public class DecisionMaker {
     private DeviationManager deviationManager;
@@ -25,7 +25,7 @@ public class DecisionMaker {
         buildHardTable();
         buildSoftTable();
         buildSplitTable();
-        // put AA and A10 into soft table and throw run time exception thats why its 10x10
+        // put AA and A10 into soft table and throw run time exception that's why its 10x10
     }
     public PlayDecision makeDecision(List<Integer> playerCardList, int dealerCard, double count){
         // Assumes stand 17 table - hit 17 is considered a deviation and handled in DeviationManager
