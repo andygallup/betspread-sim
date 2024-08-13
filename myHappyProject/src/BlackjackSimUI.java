@@ -10,11 +10,12 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.FileReader;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+
+import static java.lang.Math.round;
 
 public class BlackjackSimUI {
     private JFrame frame;
@@ -29,6 +30,29 @@ public class BlackjackSimUI {
     private JTextArea outputTextArea;
 
     public BlackjackSimUI() {
+        Object obj;
+        // Pull in betspread config from betspread.json
+        try{
+            obj = new JSONParser().parse(new InputStreamReader(this.getClass().getResource("/betspread.json").openStream()));
+        }
+        catch(Exception e){
+            throw new RuntimeException("Caught exception when creating JSONParser:", e);
+        }
+        // typecasting obj to JSONObject
+        JSONObject jo = (JSONObject) obj;
+        String betspreadString = "Betspread: \n";
+        for (int i = 0; i < 5; i++) {
+            String key = "" + i;
+            JSONObject countSpecificJSON = (JSONObject) jo.get(key);
+            long seats = (Long) countSpecificJSON.get("seats");
+            long bettingUnits = (Long) countSpecificJSON.get("bettingUnitsPerSeat");
+            betspreadString = betspreadString + "TC " + i + ": " + seats + " spot(s) betting " + bettingUnits + " units." + System.lineSeparator();
+        }
+
+        initUI(betspreadString);
+    }
+
+    private void initUI(String betspreadString) {
         frame = new JFrame("Blackjack Simulator");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(300, 400);
@@ -45,11 +69,11 @@ public class BlackjackSimUI {
         gbc.gridy = 0;
         gbc.weightx = 0.6;
         mainPanel.add(new TooltipLabel(
-                "Sim Iterations:",
-                "Number of times to run the simulation. " +
-                "Recommended minimum of 100 for reasonably accurate answers. " +
-                "More simulations will result in more accuracy, but longer run times")
-                .getPanel(),
+                        "Sim Iterations:",
+                        "Number of times to run the simulation. " +
+                                "Recommended minimum of 100 for reasonably accurate answers. " +
+                                "More simulations will result in more accuracy, but longer run times")
+                        .getPanel(),
                 gbc);
         gbc.gridx = 1;
         gbc.weightx = 0.5;
@@ -60,9 +84,9 @@ public class BlackjackSimUI {
         gbc.gridy = 1;
         gbc.weightx = 0.6;
         mainPanel.add(new TooltipLabel(
-                "Shoe Size:",
-                "Enter the number of decks in the shoe.")
-                .getPanel(),
+                        "Shoe Size:",
+                        "Enter the number of decks in the shoe.")
+                        .getPanel(),
                 gbc);
         gbc.gridx = 1;
         gbc.weightx = 0.5;
@@ -73,10 +97,10 @@ public class BlackjackSimUI {
         gbc.gridy = 2;
         gbc.weightx = 0.6;
         mainPanel.add(new TooltipLabel(
-                "Stand on 17:",
-                "Whether the dealer will stand on soft 17, or hit on soft 17. " +
-                "Checked field indicates they will stand")
-                .getPanel(),
+                        "Stand on 17:",
+                        "Whether the dealer will stand on soft 17, or hit on soft 17. " +
+                                "Checked field indicates they will stand")
+                        .getPanel(),
                 gbc);
         gbc.gridx = 1;
         gbc.weightx = 0.5;
@@ -87,10 +111,10 @@ public class BlackjackSimUI {
         gbc.gridy = 3;
         gbc.weightx = 0.6;
         mainPanel.add(new TooltipLabel(
-                "Deck Penetration (0-1):",
-                "Average percentage of the shoe that is dealt before the shoe is shuffled " +
-                "(0.75 = 75% of the shoe is dealt before shuffle)")
-                .getPanel(),
+                        "Deck Penetration (0-1):",
+                        "Average percentage of the shoe that is dealt before the shoe is shuffled " +
+                                "(0.75 = 75% of the shoe is dealt before shuffle)")
+                        .getPanel(),
                 gbc);
         gbc.gridx = 1;
         gbc.weightx = 0.5;
@@ -101,10 +125,10 @@ public class BlackjackSimUI {
         gbc.gridy = 4;
         gbc.weightx = 0.6;
         mainPanel.add(new TooltipLabel(
-                "Minimum Bet:",
-                "Minimum table bet. " +
-                "For the purposes of this sim, this is also considered the betting unit for any configured bet spread")
-                .getPanel(),
+                        "Minimum Bet:",
+                        "Minimum table bet. " +
+                                "For the purposes of this sim, this is also considered the betting unit for any configured bet spread")
+                        .getPanel(),
                 gbc);
         gbc.gridx = 1;
         gbc.weightx = 0.5;
@@ -151,8 +175,16 @@ public class BlackjackSimUI {
         mainPanel.add(hoursPlayedField, gbc);
 
         gbc.gridx = 0;
-        gbc.gridy = 8;
+        gbc.gridy += 1;
         gbc.gridwidth = 2;
+        JTextArea betspreadTextArea = new JTextArea();
+        betspreadTextArea.setText(betspreadString);
+        betspreadTextArea.setEditable(false);
+        mainPanel.add(betspreadTextArea, gbc);
+
+
+        gbc.gridy += gbc.gridheight;
+        gbc.gridheight = 1;
         JButton simulateButton = new JButton("Simulate");
         simulateButton.addActionListener(new ActionListener() {
             @Override
@@ -163,10 +195,10 @@ public class BlackjackSimUI {
 
         mainPanel.add(simulateButton, gbc);
 
-        gbc.gridy = 9;
+        gbc.gridy += gbc.gridheight;
         gbc.gridwidth = 2;
         outputTextArea = new JTextArea();
-        outputTextArea.setText("Waiting for input...");
+
         outputTextArea.setEditable(false);
         mainPanel.add(new JScrollPane(outputTextArea), gbc);
 
@@ -186,19 +218,21 @@ public class BlackjackSimUI {
         }
         // typecasting obj to JSONObject
         JSONObject jo = (JSONObject) obj;
-
+        String betspreadString = "";
         Map<Integer, BetConfig> betSpread = new HashMap<Integer, BetConfig>();
         for (int i = 0; i < 5; i++) {
             String key = "" + i;
             JSONObject countSpecificJSON = (JSONObject) jo.get(key);
-            long seats = (Long) countSpecificJSON.get(  "seats");
+            long seats = (Long) countSpecificJSON.get("seats");
             long bettingUnits = (Long) countSpecificJSON.get("bettingUnitsPerSeat");
             betSpread.put(i, new BetConfig((int)seats, (int) bettingUnits));
+            betspreadString = betspreadString + "TC " + i + ": " + seats + " spot(s) betting " + bettingUnits + " units.\n";
         }
 
         // run the game
         TableManager tableManager;
         double avgEndBankroll = 0;
+        double highestBankroll = 0;
         double avgEv = 0;
         double ror = 0;
         double endBankroll = 0;
@@ -206,8 +240,11 @@ public class BlackjackSimUI {
         for (int i = 0; i < simIterations; i++){
             tableManager = new TableManager(shoeSize, stand17, deckPen, minBet, bankroll, handsPerHour, hoursPlayed, betSpread);
             endBankroll = tableManager.playGame();
-            if (endBankroll <= 3*minBet){
+            if (endBankroll <= 3*minBet) {
                 numberOfTimesBroke += 1;
+            }
+            if (endBankroll > highestBankroll) {
+                highestBankroll = endBankroll;
             }
             avgEndBankroll += endBankroll;
         }
@@ -218,6 +255,8 @@ public class BlackjackSimUI {
         outputArr.add(avgEndBankroll);
         outputArr.add(avgEv);
         outputArr.add(ror);
+        outputArr.add(numberOfTimesBroke);
+        outputArr.add(highestBankroll);
 
         return outputArr;
     }
@@ -244,16 +283,21 @@ public class BlackjackSimUI {
         outputTextArea.append("Hands per Hour: " + handsPerHour + "\n");
         outputTextArea.append("Hours Played: " + hoursPlayed + "\n");
         outputTextArea.append("Simulation Iterations: " + simIterations + "\n");
+        outputTextArea.append("---------------------------------------\n");
 
 
         // Run your simulations and update the outputTextArea with the results
         ArrayList<Double> result;
         result = runSim(simIterations, shoeSize, stand17, deckPen, minBet, bankroll, handsPerHour, hoursPlayed);
         outputTextArea.append("\nSimulation results:");
-        outputTextArea.append("\nAverage End Bankroll: " + result.get(0));
-        outputTextArea.append("\nAverage EV/hour: " + result.get(1));
-        outputTextArea.append("\nRisk of Ruin: " + result.get(2));
+        outputTextArea.append("\nAverage end bankroll: " + result.get(0));
+        outputTextArea.append("\nEV/hour: " + result.get(1));
+        outputTextArea.append("\nRisk of ruin: " + result.get(2));
 
+        outputTextArea.append("\n\nSimulation statistics: ");
+        outputTextArea.append("\nNumber of hands played: " + (simIterations*handsPerHour*hoursPlayed));
+        outputTextArea.append("\nNumber of simulations that ended in 'ruin': " + round(result.get(3)));
+        outputTextArea.append("\nHighest end bankroll: " + result.get(4));
         //resize to show all content
         frame.pack();
     }
