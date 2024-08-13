@@ -1,5 +1,5 @@
 import static org.junit.jupiter.api.Assertions.*;
-import static main.java.utils.PlayerHandUtils.PlayDecision;
+import static app.utils.PlayerHandUtils.PlayDecision;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 
-import main.java.DecisionMaker;
+import app.DecisionMaker;
 
 class DecisionMakerTest {
     Logger logger = Logger.getLogger(DecisionMakerTest.class.getName());

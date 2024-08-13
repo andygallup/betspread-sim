@@ -1,8 +1,8 @@
-package main.java;
+package app;
 
 import java.util.List;
 
-import static main.java.utils.PlayerHandUtils.*;
+import static app.utils.PlayerHandUtils.*;
 
 public class DecisionMaker {
     private DeviationManager deviationManager;

@@ -1,4 +1,4 @@
-package main.java.utils;
+package app.utils;
 
 public class BetConfig {
     int seats;

@@ -1,7 +1,7 @@
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import main.java.TableManager;
-import main.java.utils.BetConfig;
+import app.TableManager;
+import app.utils.BetConfig;
 
 import java.util.HashMap;
 import java.util.Map;

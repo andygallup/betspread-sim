@@ -1,13 +1,13 @@
-package main.java;
+package app;
 
-import main.java.utils.BetConfig;
+import app.utils.BetConfig;
 
 import java.util.*;
 import java.util.logging.Logger;
 
 import static java.lang.Math.floor;
 import static java.lang.System.exit;
-import static main.java.utils.PlayerHandUtils.*;
+import static app.utils.PlayerHandUtils.*;
 
 public class TableManager {
     private int shoeSize;
