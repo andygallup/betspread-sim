@@ -10,7 +10,7 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.FileReader;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -33,7 +33,7 @@ public class BlackjackSimUI {
         Object obj;
         // Pull in betspread config from betspread.json
         try{
-            obj = new JSONParser().parse(new FileReader("/Users/agallup/IdeaProjects/betspread-sim/myHappyProject/betspread.json"));
+            obj = new JSONParser().parse(new InputStreamReader(this.getClass().getResource("/betspread.json").openStream()));
         }
         catch(Exception e){
             throw new RuntimeException("Caught exception when creating JSONParser:", e);
@@ -139,9 +139,9 @@ public class BlackjackSimUI {
         gbc.gridy = 5;
         gbc.weightx = 0.6;
         mainPanel.add(new TooltipLabel(
-                        "Bankroll:",
-                        "Starting bankroll")
-                        .getPanel(),
+                "Bankroll:",
+                "Starting bankroll")
+                .getPanel(),
                 gbc);
         gbc.gridx = 1;
         gbc.weightx = 0.5;
@@ -152,9 +152,9 @@ public class BlackjackSimUI {
         gbc.gridy = 6;
         gbc.weightx = 0.6;
         mainPanel.add(new TooltipLabel(
-                        "Hands per Hour:",
-                        "Average number of hands expected to be played per hour")
-                        .getPanel(),
+                "Hands per Hour:",
+                "Average number of hands expected to be played per hour")
+                .getPanel(),
                 gbc);
         gbc.gridx = 1;
         gbc.weightx = 0.5;
@@ -165,9 +165,9 @@ public class BlackjackSimUI {
         gbc.gridy = 7;
         gbc.weightx = 0.6;
         mainPanel.add(new TooltipLabel(
-                        "Hours Played:",
-                        "Number of hours to be played per sim iteration")
-                        .getPanel(),
+                "Hours Played:",
+                "Number of hours to be played per sim iteration")
+                .getPanel(),
                 gbc);
         gbc.gridx = 1;
         gbc.weightx = 0.5;
@@ -211,7 +211,7 @@ public class BlackjackSimUI {
         Object obj;
         // Pull in betspread config from betspread.json
         try{
-            obj = new JSONParser().parse(new FileReader("/Users/agallup/IdeaProjects/betspread-sim/myHappyProject/betspread.json"));
+            obj = new JSONParser().parse(new InputStreamReader(this.getClass().getResource("/betspread.json").openStream()));
         }
         catch(Exception e){
             throw new RuntimeException("Caught exception when creating JSONParser:", e);
