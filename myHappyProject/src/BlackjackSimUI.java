@@ -11,6 +11,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.FileReader;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -178,7 +179,7 @@ public class BlackjackSimUI {
         Object obj;
         // Pull in betspread config from betspread.json
         try{
-            obj = new JSONParser().parse(new FileReader("/Users/agallup/IdeaProjects/betspread-sim/myHappyProject/betspread.json"));
+            obj = new JSONParser().parse(new InputStreamReader(this.getClass().getResource("/betspread.json").openStream()));
         }
         catch(Exception e){
             throw new RuntimeException("Caught exception when creating JSONParser:", e);
